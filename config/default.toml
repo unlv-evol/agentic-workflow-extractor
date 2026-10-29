@@ -1,0 +1,169 @@
+# awe -- default detector catalogue
+#
+# [paths]      which files to pull out of git history (path-based, cheap prefilter)
+# [agents.*]   how to recognise an agent invocation inside those files (content-based)
+#
+# Evidence kinds, in decreasing order of confidence:
+#   uses  : the step invokes a dedicated agent GitHub Action        -> strong
+#   run   : the step shell-invokes an agent CLI                     -> strong
+#   path  : the workflow file has a reserved, agent-specific name   -> strong
+#   job   : a job carries a reserved, agent-specific id             -> strong
+#   url   : the step talks to an LLM inference endpoint             -> medium
+#   env   : an agent/LLM credential is bound into the step or job   -> weak
+#
+# A revision is classified agentic only if it carries at least one `strong`
+# evidence item, unless --include-weak is passed. Weak evidence alone is
+# ambiguous: ANTHROPIC_API_KEY may simply be feeding a test suite.
+
+[paths]
+github_actions = [
+    ".github/workflows/*.yml",
+    ".github/workflows/*.yaml",
+]
+# GitHub Agentic Workflows are authored as Markdown next to the compiled
+# `*.lock.yml` they produce. Both halves are committed, and only the source
+# carries the tool grants and output constraints, so both are collected.
+# git pathspec wildcards cross `/`, so this also picks up `workflows/shared/`.
+agentic_workflows = [
+    ".github/workflows/*.md",
+]
+
+# ---------------------------------------------------------------------------
+# Repositories to record but not mine. These are development repositories of
+# the agent tooling itself, not users of it. `github/gh-aw` alone holds 235k
+# workflow blobs across 242k revisions -- roughly a thousand times any real
+# adopter -- so including it would let one project dominate every aggregate in
+# the dataset. They are still emitted in repositories.csv with status
+# `excluded`, so the denominator stays honest and the choice stays visible.
+# ---------------------------------------------------------------------------
+
+[exclude]
+repositories = [
+    "github/gh-aw",
+    "github/gh-aw-firewall",
+    "github/gh-aw-mcpg",
+    "githubnext/gh-aw",
+]
+
+[agents.claude]
+display_name = "Claude"
+uses = [
+    "anthropics/claude-code-action",
+    "anthropics/claude-code-base-action",
+]
+run = [
+    "claude -p",
+    "claude --print",
+    "claude-code",
+    "@anthropic-ai/claude-code",
+]
+url = ["api.anthropic.com"]
+env = ["ANTHROPIC_API_KEY", "CLAUDE_CODE_OAUTH_TOKEN"]
+
+[agents.codex]
+display_name = "OpenAI Codex"
+uses = [
+    "openai/codex-action",
+]
+run = [
+    "codex exec",
+    "npm install -g @openai/codex",
+    "@openai/codex",
+]
+url = ["api.openai.com"]
+env = ["OPENAI_API_KEY", "CODEX_API_KEY"]
+
+[agents.copilot]
+display_name = "GitHub Copilot"
+uses = [
+    "actions/ai-inference",
+    "github/copilot-cli-action",
+]
+run = [
+    "copilot -p",
+    "gh copilot",
+    "@github/copilot",
+]
+# The Copilot coding agent is wired in by reserved name, not by action
+# reference: GitHub reads `.github/workflows/copilot-setup-steps.yml` and runs
+# the job `copilot-setup-steps` to prepare the agent's environment. Neither
+# carries a `uses:` or `run:` that identifies Copilot.
+path = ["copilot-setup-steps.yml", "copilot-setup-steps.yaml"]
+job = ["copilot-setup-steps"]
+url = ["models.inference.ai.azure.com", "models.github.ai"]
+env = ["COPILOT_AGENT_TOKEN"]
+
+[agents.gemini]
+display_name = "Gemini"
+uses = [
+    "google-github-actions/run-gemini-cli",
+]
+run = [
+    "gemini -p",
+    "@google/gemini-cli",
+    "gemini-cli",
+]
+url = ["generativelanguage.googleapis.com"]
+env = ["GEMINI_API_KEY", "GOOGLE_API_KEY"]
+
+[agents.cursor]
+display_name = "Cursor"
+run = [
+    "cursor-agent",
+]
+env = ["CURSOR_API_KEY"]
+
+[agents.aider]
+display_name = "Aider"
+run = [
+    "aider --message",
+    "aider --yes",
+    "pip install aider",
+    "aider-chat",
+]
+
+[agents.devin]
+display_name = "Devin"
+uses = ["CognitionAI/devin-action"]
+url = ["api.devin.ai"]
+env = ["DEVIN_API_KEY"]
+
+[agents.pr_agent]
+display_name = "Qodo/PR-Agent"
+uses = ["Codium-ai/pr-agent"]
+run = ["pr-agent"]
+
+[agents.coderabbit]
+display_name = "CodeRabbit"
+uses = ["coderabbitai/ai-pr-reviewer"]
+
+# ---------------------------------------------------------------------------
+# Task taxonomy: what the agent step is being asked to do. Matched against the
+# workflow-level `on:` triggers plus the job/step/workflow names.
+# ---------------------------------------------------------------------------
+
+[tasks.review]
+name_hints = ["review", "reviewer", "pr-review", "code review"]
+triggers = ["pull_request", "pull_request_target"]
+
+[tasks.triage]
+name_hints = ["triage", "label", "issue", "classify", "dedup"]
+triggers = ["issues", "issue_comment"]
+
+[tasks.implement]
+name_hints = ["implement", "fix", "resolve", "autofix", "patch", "solve"]
+
+[tasks.test]
+name_hints = ["test", "coverage", "flaky", "unit"]
+
+[tasks.docs]
+name_hints = ["doc", "docs", "changelog", "release notes", "readme"]
+
+[tasks.security]
+name_hints = ["security", "vuln", "cve", "audit", "sast"]
+
+[tasks.scheduled]
+triggers = ["schedule"]
+
+[tasks.on_demand]
+triggers = ["workflow_dispatch"]

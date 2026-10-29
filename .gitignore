@@ -1,0 +1,25 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+clones/
+out/
+
+# LaTeX build artifacts
+manuscripts/**/*.aux
+manuscripts/**/*.bbl
+manuscripts/**/*.blg
+manuscripts/**/*.fdb_latexmk
+manuscripts/**/*.fls
+manuscripts/**/*.log
+manuscripts/**/*.out
+.venv/
+*.new
+
+# macOS
+.DS_Store
+
+# Not part of the replication package (see _archive/README.md)
+_archive/

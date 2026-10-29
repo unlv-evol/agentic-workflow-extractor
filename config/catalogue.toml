@@ -1,0 +1,38 @@
+# awe -- frozen detector catalogue for the dataset (MSR 2027 full run)
+#
+# Frozen 2026-10-03. Do not change it once mining has started: the validation
+# sample (validation/PLAN.md) is only valid for the patterns that produced it.
+#
+# The union of two complementary catalogues:
+#   default.toml      hand-written from vendor documentation: run/url/env/path/job
+#                     patterns, plus [paths], [tasks] and [exclude]
+#   marketplace.toml  generated from the GitHub Marketplace `ai-assisted`
+#                     category on 2026-09-08: the long tail of `uses` patterns
+# Patterns are unioned per agent group; neither file is edited.
+
+include = ["default.toml", "marketplace.toml"]
+
+# The generator names Qodo's PR-Agent `qodo`; the hand-written catalogue
+# already calls it `pr_agent` (Codium-ai/pr-agent). One group, one name.
+[aliases]
+qodo = "pr_agent"
+
+# The generator's `pr-agent` substring rule also caught third-party actions
+# whose names merely contain "pr-agent". Nothing ties them to Qodo, so they are
+# kept as AI actions but not attributed to a vendor.
+[overrides]
+"codota/tabnine-pr-agent" = "generic_ai"
+"daizzah/gemini-pr-agent" = "generic_ai"
+"lukepoo101/open-pr-agent" = "generic_ai"
+
+[agents.generic_ai]
+display_name = "Other AI-assisted actions"
+
+[agents.goose]
+display_name = "Goose"
+
+[agents.opencode]
+display_name = "OpenCode"
+
+[agents.openhands]
+display_name = "OpenHands"

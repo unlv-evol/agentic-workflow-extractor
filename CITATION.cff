@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this tool, please cite it as below."
+title: "awe: Agentic Workflow Extractor"
+abstract: >-
+  A command line tool that mines the git history of CI workflow files and
+  detects coding-agent invocations inside them, including GitHub Agentic
+  Workflows, for large-scale studies of agentic continuous integration on
+  GitHub.
+version: 0.1.0
+license: MIT
+type: software
+keywords:
+  - mining software repositories
+  - continuous integration
+  - GitHub Actions
+  - coding agents
+  - dataset
+authors:
+  - family-names: "Ogenrwot"
+    given-names: "Daniel"
+    email: "ogenrwot@unlv.nevada.edu"
+    affiliation: "University of Nevada, Las Vegas"
+    orcid: "https://orcid.org/0000-0002-0133-8164"
+  - family-names: "Delgado Cervantes"
+    given-names: "Jorge Gonzalo"
+    email: "delgaj10@unlv.nevada.edu"
+    affiliation: "University of Nevada, Las Vegas"
+    orcid: "https://orcid.org/0009-0005-5155-8914"
+  - family-names: "Kim"
+    given-names: "Woojoong"
+    email: "kimw19@unlv.nevada.edu"
+    affiliation: "University of Nevada, Las Vegas"
+    orcid: "https://orcid.org/0009-0007-8068-1035"
+  - family-names: "Businge"
+    given-names: "John"
+    email: "john.businge@unlv.edu"
+    affiliation: "University of Nevada, Las Vegas"
+    orcid: "https://orcid.org/0000-0003-3206-7085"

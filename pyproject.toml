@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "awe-extractor"
+version = "0.1.0"
+description = "Agentic Workflow Extractor: mine coding-agent invocations from CI workflow histories"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = ["PyYAML>=6.0"]
+
+[project.scripts]
+awe = "awe.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
